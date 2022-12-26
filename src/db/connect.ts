@@ -1,4 +1,4 @@
-import mongoose, { ConnectOptions, MongoClient, ServerApiVersion} from "mongoose";
+import mongoose, { ConnectOptions } from "mongoose";
 import config from "config";
 import log from "../logger";
 import dotenv from "dotenv";

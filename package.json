@@ -49,8 +49,12 @@
     "typescript": "^4.9.4"
   },
   "scripts": {
+    "build": "tsc",
+    "start": "node ./public/src/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy" : "vercel deploy --prod"
   },
   "private": false
 }
+

@@ -1,16 +1,18 @@
 import express, {Application, Request, Response} from "express";
 import helmet from "helmet";
+import dotenv from "dotenv";
 import config from "config";
 import log from "./logger";
 import connect from "./db/connect";
 
 import routes from './routes';
 
+dotenv.config();
 
 
 const app: Application = express();
-const port = config.get<number>("port");
-const host = config.get<string>("host");
+const port: number = Number(process.env.PORT) || config.get<number>("port");
+const host = process.env.HOST || config.get<string>("host");
 
 
 app.use(express.json());
