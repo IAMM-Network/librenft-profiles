@@ -14,7 +14,6 @@ function connect() {
     const password = process.env.MONGOPASSWORD ?? "";
 
     log.info(dbUri);
-    log.info("pwd: " + password);
 
     dbUri = dbUri.replace("<pwd>", password);    
 
