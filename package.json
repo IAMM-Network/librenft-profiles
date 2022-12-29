@@ -11,6 +11,9 @@
     "url": "https://github.com/IAMM-Network/librenft-profiles/issues"
   },
   "homepage": "https://github.com/IAMM-Network/librenft-profiles#readme",
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "config": "^3.3.8",
@@ -54,6 +57,16 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy" : "vercel deploy --prod"
+  },
+  "pkg": {
+    "scripts": [
+      "./node_modules/thread-stream/lib/worker.js",
+      "./node_modules/pino/lib/worker.js"
+    ],
+    "patches": {
+			"./node_modules/thread-stream/lib/worker.js": ["fn = (await realImport(workerData.filename)).default", "fn = realRequire(workerData.filename.replace('file://', ''))"],
+			"./node_modules/pino/lib/worker.js": ["fn = (await realImport(toLoad)).default", "fn = realRequire(t.target)"]
+		}
   },
   "private": false
 }

@@ -7,9 +7,9 @@ const express_1 = __importDefault(require("express"));
 const helmet_1 = __importDefault(require("helmet"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const config_1 = __importDefault(require("config"));
-const logger_1 = __importDefault(require("./logger"));
-const connect_1 = __importDefault(require("./db/connect"));
-const routes_1 = __importDefault(require("./routes"));
+const logger_1 = __importDefault(require("../src//logger"));
+const connect_1 = __importDefault(require("../src//db/connect"));
+const routes_1 = __importDefault(require("../src/routes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = Number(process.env.PORT) || config_1.default.get("port");
@@ -23,9 +23,8 @@ app.get('/', (req, res) => {
     });
 });
 (0, routes_1.default)(app);
-const db = (0, connect_1.default)();
 app.listen(port, host, () => {
-    // const db = await connect();
-    //routes(app);
     logger_1.default.info(`Server available at http://${host}:${port}`);
+    (0, connect_1.default)();
+    (0, routes_1.default)(app);
 });

@@ -26,9 +26,10 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 routes(app);
+const db = connect();
 
 app.listen(port, host, () => {
+    // const db = await connect();
+    //routes(app);
     log.info(`Server available at http://${host}:${port}`);
-    connect();
-    routes(app);
 });
