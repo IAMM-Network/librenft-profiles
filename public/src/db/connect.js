@@ -38,7 +38,6 @@ function connect() {
     let dbUri = process.env.DBURI || "mongodb+srv://IAMMUSER:<pwd>@cluster0.hf1dq.mongodb.net/IAMM?retryWrites=true&w=majority";
     const password = (_a = process.env.MONGOPASSWORD) !== null && _a !== void 0 ? _a : "";
     logger_1.default.info(dbUri);
-    logger_1.default.info("pwd: " + password);
     dbUri = dbUri.replace("<pwd>", password);
     return mongoose_1.default
         .connect(dbUri)

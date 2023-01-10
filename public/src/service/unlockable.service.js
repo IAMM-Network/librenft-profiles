@@ -24,8 +24,10 @@ function createUnlockable(input) {
             let pUnlockable = {
                 publicAddress: input.publicAddress,
                 contractAddress: input.contractAddress,
+                tokenId: input.tokenId,
                 link: input.link
             };
+            logger_1.default.info(`tokenId: ${input.tokenId}`);
             const signatureInMessage = input.signedMessage;
             logger_1.default.info("Verifiying message");
             logger_1.default.info(JSON.stringify(pUnlockable));
@@ -47,7 +49,7 @@ function createUnlockable(input) {
             if (!user) {
                 throw new Error("User not found");
             }
-            let newUnlockable = { uuid: (0, crypto_1.randomUUID)(), publicAddress: recoveredAddress, contractAddress: pUnlockable.contractAddress, link: pUnlockable.link, user: user._id };
+            let newUnlockable = { uuid: (0, crypto_1.randomUUID)(), publicAddress: recoveredAddress, contractAddress: pUnlockable.contractAddress, tokenId: pUnlockable.tokenId, link: pUnlockable.link, user: user._id };
             return yield unlockable_model_1.default.create(newUnlockable);
         }
         catch (error) {
@@ -62,6 +64,7 @@ function getUnlockable(query) {
         let pSignedQuery = {
             publicAddress: query.publicAddress,
             contractAddress: query.contractAddress,
+            tokenId: query.tokenId
         };
         const signatureInMessage = query.signedMessage;
         logger_1.default.info("Verifiying message");

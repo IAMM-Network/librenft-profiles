@@ -13,8 +13,11 @@ export async function createUnlockable(input:DocumentDefinition<createUnlockable
         let pUnlockable: signedUnlockable = { 
             publicAddress: input.publicAddress,
             contractAddress: input.contractAddress,
+            tokenId: input.tokenId,
             link: input.link
         };    
+
+        log.info(`tokenId: ${input.tokenId}`);
     
         const signatureInMessage: SignatureLike = input.signedMessage;
         
@@ -44,7 +47,7 @@ export async function createUnlockable(input:DocumentDefinition<createUnlockable
             throw new Error("User not found");
         }
 
-        let newUnlockable = { uuid: randomUUID(), publicAddress: recoveredAddress, contractAddress: pUnlockable.contractAddress, link: pUnlockable.link, user: user._id };
+        let newUnlockable = { uuid: randomUUID(), publicAddress: recoveredAddress, contractAddress: pUnlockable.contractAddress, tokenId: pUnlockable.tokenId, link: pUnlockable.link, user: user._id };
 
         return await Unlockable.create(newUnlockable);
 
@@ -60,6 +63,7 @@ export async function getUnlockable(query: FilterQuery<UnlockableDocument>){
     let pSignedQuery: signedUnlockable = { 
         publicAddress: query.publicAddress,
         contractAddress: query.contractAddress,
+        tokenId: query.tokenId
     };
 
     const signatureInMessage: SignatureLike = query.signedMessage;

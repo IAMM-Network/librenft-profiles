@@ -10,6 +10,8 @@ export const createUnlockableSchema = object({
             .required("Public Address is required")
             .min(42,"Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
+        tokenId: number()
+            .required("TokenId is required"),
         link: string()
             .required("link is required"),
         signedMessage: object({

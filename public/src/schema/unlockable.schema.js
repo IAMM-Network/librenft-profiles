@@ -12,6 +12,8 @@ exports.createUnlockableSchema = (0, yup_1.object)({
             .required("Public Address is required")
             .min(42, "Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
+        tokenId: (0, yup_1.number)()
+            .required("TokenId is required"),
         link: (0, yup_1.string)()
             .required("link is required"),
         signedMessage: (0, yup_1.object)({
