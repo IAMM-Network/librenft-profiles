@@ -1,8 +1,6 @@
 import {Request, Response, NextFunction} from "express";
-import {omit} from 'lodash';
 import { createUnlockable, getUnlockable } from "../service/unlockable.service";
 import log from "../logger";
-import { createUnlockableSchema } from "../schema/unlockable.schema";
 import { FilterQuery } from "mongoose";
 import { UnlockableDocument } from "../model/unlockable.model";
 
