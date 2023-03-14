@@ -8,6 +8,12 @@ exports.createUserSchema = (0, yup_1.object)({
             .required("Public Address is required")
             .min(42, "Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
+        handle: (0, yup_1.string)()
+            .required("Must include handle"),
+        imageURI: (0, yup_1.string)()
+            .required("Must include imageURI"),
+        followNFTURI: (0, yup_1.string)()
+            .required("Must include followNFTURI"),
         email: (0, yup_1.string)()
             .email("Must be a valid email"),
         signedMessage: (0, yup_1.object)({

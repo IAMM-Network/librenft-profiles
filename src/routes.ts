@@ -33,6 +33,12 @@ function routes(app: Application){
     app.get(
         "/api/contracts/:contractAddress", getContractHandler
     )
+
+    app.get(
+        "/health", (req: Request, res: Response) => {
+            res.send("API Working");
+        }
+    )
 }
 
 export default routes;

@@ -4,6 +4,9 @@ import config from "config";
 
 export interface UserDocument extends mongoose.Document {
     publicAddress: string;
+    handle: string;
+    imageURI: string;
+    followNFTURI: string;
     email: string;
     createdAt: Date;
     updatedAt: Date;
@@ -12,7 +15,10 @@ export interface UserDocument extends mongoose.Document {
 const UserSchema = new mongoose.Schema(
     {
         publicAddress: { type: String, required: true, unique: true},
-        email: { type: String, required: true, unique: true}
+        handle: { type: String, required: true, unique: true},
+        imageURI: { type: String, required: false, unique: false},
+        followNFTURI: { type: String, required: false, unique: false},
+        email: { type: String, required: false, unique: false}
     },
     { timestamps: true}
 );
