@@ -28,12 +28,12 @@ const options: cors.CorsOptions = {
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: "http://localhost:3000",
+    origin: ['http://localhost:3000', 'https://iamm.network/'],
     preflightContinue: true,
   };
 
-  //use cors middleware
-  app.use(cors(options));
+//use cors middleware
+app.use(cors(options));
 
 //enable pre-flight
 app.options('*', cors(options));
