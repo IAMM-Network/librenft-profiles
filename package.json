@@ -14,7 +14,6 @@
   "engines": {
     "node": "16.x"
   },
-  "module": "commonjs",
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
@@ -77,7 +76,7 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "start": "ts-node src/app.ts",
+    "start": "ts-node --transpile-only src/app.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "vercel deploy --prod"

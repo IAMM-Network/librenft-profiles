@@ -4,6 +4,7 @@ import {
   eXDaiNetwork,
   eGodWokenNetwork,
   iParamsPerNetwork,
+  eNetwork
 } from './helpers/types';
 
 import dotenv from 'dotenv';
@@ -17,8 +18,8 @@ const GWEI = 1000 * 1000 * 1000;
 
 export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
   [eEthereumNetwork.kovan]: process.env.KOVAN_RPC_URL,
-  [eEthereumNetwork.ropsten]: process.env.ROPSTEN_RPC_URL || "",
-  [eEthereumNetwork.main]: process.env.MAINNET_RPC_URL || "",
+  [eEthereumNetwork.ropsten]: process.env.ROPSTEN_RPC_URL,
+  [eEthereumNetwork.main]: process.env.MAINNET_RPC_URL,
   [eEthereumNetwork.hardhat]: 'http://localhost:8545',
   [eEthereumNetwork.harhatevm]: 'http://localhost:8545',
   [eEthereumNetwork.tenderlyMain]: `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`,

@@ -30,27 +30,27 @@ const MAINNET_FORK = process.env.MAINNET_FORK === 'true';
 const TRACK_GAS = process.env.TRACK_GAS === 'true';
 const BLOCK_EXPLORER_KEY = process.env.BLOCK_EXPLORER_KEY || '';
 
-const getCommonNetworkConfig = (networkName: eNetwork, networkId: number) => ({
-  url: NETWORKS_RPC_URL[networkName] ?? '',
-  accounts: {
-    mnemonic: MNEMONIC,
-    path: MNEMONIC_PATH,
-    initialIndex: 0,
-    count: 20,
-  },
-  blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
-  gas: DEFAULT_BLOCK_GAS_LIMIT,
-  gasPrice: 37257824143,
-  allowUnlimitedContractSize: true,
-  chainId: 71401,
-  throwOnTransactionFailures: true,
-  throwOnCallFailures: true,
-});
+// const getCommonNetworkConfig = (networkName: eNetwork, networkId: number) => ({
+//   url: NETWORKS_RPC_URL[networkName] ?? '',
+//   accounts: {
+//     mnemonic: MNEMONIC,
+//     path: MNEMONIC_PATH,
+//     initialIndex: 0,
+//     count: 20,
+//   },
+//   blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
+//   gas: DEFAULT_BLOCK_GAS_LIMIT,
+//   gasPrice: 37257824143,
+//   allowUnlimitedContractSize: true,
+//   chainId: 71401,
+//   throwOnTransactionFailures: true,
+//   throwOnCallFailures: true,
+// });
 
 const mainnetFork = MAINNET_FORK
   ? {
-      blockNumber: 12012081,
-      url: NETWORKS_RPC_URL['main'],
+      blockNumber: 100000,
+      url: process.env.GODWOKENTESTNET_RPC_URL || '',
     }
   : undefined;
 
@@ -72,15 +72,30 @@ const config: HardhatUserConfig = {
     ],
   },
   networks: {
-    kovan: getCommonNetworkConfig(eEthereumNetwork.kovan, 42),
-    ropsten: getCommonNetworkConfig(eEthereumNetwork.ropsten, 3),
-    main: getCommonNetworkConfig(eEthereumNetwork.main, 1),
-    tenderlyMain: getCommonNetworkConfig(eEthereumNetwork.tenderlyMain, 3030),
-    matic: getCommonNetworkConfig(ePolygonNetwork.matic, 137),
-    sandbox: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
-    mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
-    xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
-    gwTestnet: getCommonNetworkConfig(eGodWokenNetwork.gwTestnet, 71401),
+    // kovan: getCommonNetworkConfig(eEthereumNetwork.kovan, 42),
+    // ropsten: getCommonNetworkConfig(eEthereumNetwork.ropsten, 3),
+    // main: getCommonNetworkConfig(eEthereumNetwork.main, 1),
+    // tenderlyMain: getCommonNetworkConfig(eEthereumNetwork.tenderlyMain, 3030),
+    // matic: getCommonNetworkConfig(ePolygonNetwork.matic, 137),
+    // sandbox: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
+    // mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
+    // xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
+    gwTestnet: {
+      url: process.env.GODWOKENTESTNET_RPC_URL ?? '',
+      accounts: {
+        mnemonic: MNEMONIC,
+        path: MNEMONIC_PATH,
+        initialIndex: 0,
+        count: 20,
+      },
+      blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
+      gas: DEFAULT_BLOCK_GAS_LIMIT,
+      gasPrice: 37257824143,
+      allowUnlimitedContractSize: true,
+      chainId: 71401,
+      throwOnTransactionFailures: true,
+      throwOnCallFailures: true,
+    }, //getCommonNetworkConfig(eGodWokenNetwork.gwTestnet, 71401),
     hardhat: {
       hardfork: 'london',
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,

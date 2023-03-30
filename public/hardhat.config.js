@@ -4,9 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const test_wallets_1 = require("./helpers/test-wallets");
-const types_1 = require("./helpers/types");
 const hardhat_constants_1 = require("./helpers/hardhat-constants");
-const helper_hardhat_config_1 = require("./helper-hardhat-config");
 const dotenv_1 = __importDefault(require("dotenv"));
 const glob_1 = __importDefault(require("glob"));
 const path_1 = __importDefault(require("path"));
@@ -30,29 +28,26 @@ const MNEMONIC = process.env.MNEMONIC || '';
 const MAINNET_FORK = process.env.MAINNET_FORK === 'true';
 const TRACK_GAS = process.env.TRACK_GAS === 'true';
 const BLOCK_EXPLORER_KEY = process.env.BLOCK_EXPLORER_KEY || '';
-const getCommonNetworkConfig = (networkName, networkId) => {
-    var _a;
-    return ({
-        url: (_a = helper_hardhat_config_1.NETWORKS_RPC_URL[networkName]) !== null && _a !== void 0 ? _a : '',
-        accounts: {
-            mnemonic: MNEMONIC,
-            path: MNEMONIC_PATH,
-            initialIndex: 0,
-            count: 20,
-        },
-        blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
-        gas: DEFAULT_BLOCK_GAS_LIMIT,
-        gasPrice: 37257824143,
-        allowUnlimitedContractSize: true,
-        chainId: 71401,
-        throwOnTransactionFailures: true,
-        throwOnCallFailures: true,
-    });
-};
+// const getCommonNetworkConfig = (networkName: eNetwork, networkId: number) => ({
+//   url: NETWORKS_RPC_URL[networkName] ?? '',
+//   accounts: {
+//     mnemonic: MNEMONIC,
+//     path: MNEMONIC_PATH,
+//     initialIndex: 0,
+//     count: 20,
+//   },
+//   blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
+//   gas: DEFAULT_BLOCK_GAS_LIMIT,
+//   gasPrice: 37257824143,
+//   allowUnlimitedContractSize: true,
+//   chainId: 71401,
+//   throwOnTransactionFailures: true,
+//   throwOnCallFailures: true,
+// });
 const mainnetFork = MAINNET_FORK
     ? {
-        blockNumber: 12012081,
-        url: helper_hardhat_config_1.NETWORKS_RPC_URL['main'],
+        blockNumber: 100000,
+        url: process.env.GODWOKENTESTNET_RPC_URL || '',
     }
     : undefined;
 const config = {
@@ -73,15 +68,30 @@ const config = {
         ],
     },
     networks: {
-        kovan: getCommonNetworkConfig(types_1.eEthereumNetwork.kovan, 42),
-        ropsten: getCommonNetworkConfig(types_1.eEthereumNetwork.ropsten, 3),
-        main: getCommonNetworkConfig(types_1.eEthereumNetwork.main, 1),
-        tenderlyMain: getCommonNetworkConfig(types_1.eEthereumNetwork.tenderlyMain, 3030),
-        matic: getCommonNetworkConfig(types_1.ePolygonNetwork.matic, 137),
-        sandbox: getCommonNetworkConfig(types_1.ePolygonNetwork.mumbai, 80001),
-        mumbai: getCommonNetworkConfig(types_1.ePolygonNetwork.mumbai, 80001),
-        xdai: getCommonNetworkConfig(types_1.eXDaiNetwork.xdai, 100),
-        gwTestnet: getCommonNetworkConfig(types_1.eGodWokenNetwork.gwTestnet, 71401),
+        // kovan: getCommonNetworkConfig(eEthereumNetwork.kovan, 42),
+        // ropsten: getCommonNetworkConfig(eEthereumNetwork.ropsten, 3),
+        // main: getCommonNetworkConfig(eEthereumNetwork.main, 1),
+        // tenderlyMain: getCommonNetworkConfig(eEthereumNetwork.tenderlyMain, 3030),
+        // matic: getCommonNetworkConfig(ePolygonNetwork.matic, 137),
+        // sandbox: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
+        // mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
+        // xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
+        gwTestnet: {
+            url: process.env.GODWOKENTESTNET_RPC_URL ?? '',
+            accounts: {
+                mnemonic: MNEMONIC,
+                path: MNEMONIC_PATH,
+                initialIndex: 0,
+                count: 20,
+            },
+            blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
+            gas: DEFAULT_BLOCK_GAS_LIMIT,
+            gasPrice: 37257824143,
+            allowUnlimitedContractSize: true,
+            chainId: 71401,
+            throwOnTransactionFailures: true,
+            throwOnCallFailures: true,
+        },
         hardhat: {
             hardfork: 'london',
             blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,

@@ -31,12 +31,11 @@ const dotenv = __importStar(require("dotenv"));
 //import config from "config";
 const logger_1 = __importDefault(require("../logger"));
 function connect() {
-    var _a;
     //let dbUri = config.get<string>("dbUri");
     dotenv.config();
     logger_1.default.info("Config");
     let dbUri = process.env.DBURI || "mongodb+srv://IAMMUSER:<pwd>@cluster0.hf1dq.mongodb.net/IAMM?retryWrites=true&w=majority";
-    const password = (_a = process.env.MONGOPASSWORD) !== null && _a !== void 0 ? _a : "";
+    const password = process.env.MONGOPASSWORD ?? "";
     logger_1.default.info(dbUri);
     dbUri = dbUri.replace("<pwd>", password);
     return mongoose_1.default
