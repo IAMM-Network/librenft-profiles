@@ -3,10 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const unlockable_controller_1 = require("./controllers/unlockable.controller");
 const user_controller_1 = require("./controllers/user.controller");
 const contract_controller_1 = require("./controllers/contract.controller");
+const post_controller_1 = require("./controllers/post.controller");
 const middleware_1 = require("./middleware");
 const user_schema_1 = require("./schema/user.schema");
 const unlockable_schema_1 = require("./schema/unlockable.schema");
 const contract_schema_1 = require("./schema/contract.schema");
+const post_schema_1 = require("./schema/post.schema");
 function routes(app) {
     app.post("/api/profiles", (0, middleware_1.validateRequest)(user_schema_1.createUserSchema), user_controller_1.createUserHandler);
     app.get("/api/profiles/:publicAddress", user_controller_1.getUserHandler);
@@ -17,5 +19,6 @@ function routes(app) {
     app.get("/health", (req, res) => {
         res.send("API Working");
     });
+    app.post("/api/posts", (0, middleware_1.validateRequest)(post_schema_1.createPostSchema), post_controller_1.createPostHandler);
 }
 exports.default = routes;
