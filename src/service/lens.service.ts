@@ -56,9 +56,9 @@ export async function createProfile(dbUser: DocumentDefinition<UserDocument>){
         };        
     
         console.log('creating profile');
-        await lensHub.connect(user).createProfile(inputStruct);
+        await waitForTx(lensHub.connect(user).createProfile(inputStruct));
 
-        profileID = await lensHub.getProfileIdByHandle(dbUser.handle)
+        profileID = await lensHub.getProfileIdByHandle(handle)
 
         console.log(
         `Profile ID by handle: ${profileID}, user address : ${dbUser.publicAddress}`
