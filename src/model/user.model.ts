@@ -9,15 +9,15 @@ enum profileType {
     critic
 }
 
-export interface UserDocument extends mongoose.Document {
+export interface UserDocument extends  mongoose.Document {
     publicAddress: string;
     handle: string;
     imageURI: string;
     followNFTURI: string;
-    email: string;
     createdAt: Date;
     updatedAt: Date;
-    profileSelected: profileType;
+    profileType: profileType;
+    profileId?: number;
 }
 
 const UserSchema = new mongoose.Schema(
@@ -26,8 +26,8 @@ const UserSchema = new mongoose.Schema(
         handle: { type: String, required: true, unique: true},
         imageURI: { type: String, required: false, unique: false},
         followNFTURI: { type: String, required: false, unique: false},
-        email: { type: String, required: false, unique: false},
-        profileSelected: { type: Number, required: false, unique: false},
+        profileType: { type: Number, required: false, unique: false},
+        profileId: { type: Number, required: false, unique: false},
     },
     { timestamps: true}
 );

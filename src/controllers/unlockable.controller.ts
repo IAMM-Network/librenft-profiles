@@ -5,12 +5,16 @@ import { FilterQuery } from "mongoose";
 import { UnlockableDocument } from "../model/unlockable.model";
 
 export async function createUnlockableHandler(req: Request, res: Response, next: NextFunction) {
+
     try {
+
         const unlockable = await createUnlockable(req.body);
-        res.send(unlockable.toJSON())
+
+        res.status(200).json({status:"ok",message:"Unlockable created",data:unlockable});
+
     } catch (error:any) {
         log.error(error);
-        return res.status(409).send(error.message);
+        return res.status(400).send({status:"error",message:error.message,data:error.message});
     }
 }
 
@@ -28,12 +32,12 @@ export async function getUnlockableHandler(req: Request, res: Response, next: Ne
         if(unlockable){
             return res.send(unlockable);
         } else {
-            return res.json('{"status":"error","message":"Unlockable not found"}');
+            return res.json({status:"error",message:"Unlockable not found"});
         }
 
     } catch (error:any) {
         log.error(error.message);
-        return res.json(`{"status":"error","message":"Error getting the unlockable ${error.message} "}`);
+        return res.json({status:"error",message:"Error getting the unlockable",data:error.message});
     }
 
 

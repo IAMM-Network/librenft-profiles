@@ -1,13 +1,15 @@
 import '@nomiclabs/hardhat-ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractTransaction, Wallet } from 'ethers';
-import fs from 'fs';
+import { BytesLike, SignatureLike } from "@ethersproject/bytes";
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { ethers } from 'ethers';
 import { DocumentDefinition, FilterQuery } from "mongoose";
 import User, { UserDocument } from "../../model/user.model";
+import { ethers } from 'ethers';
+import fs from 'fs';
 import log from "../../logger";
 import dotenv from "dotenv";
+import { boolean } from 'yup';
 dotenv.config();
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -84,38 +86,65 @@ export async function deployWithVerify(
 //   return [governance, treasury, user];
 // }
 
-export async function initEnv(input: DocumentDefinition<UserDocument>): Promise<SignerWithAddress[]> {
+export async function initEnv(hre: HardhatRuntimeEnvironment): Promise<SignerWithAddress[]> {
 
-  //TODO: GARVAZ: Modify this function to get the addresses from .env file
+  // //TODO: GARVAZ: Modify this function to get the addresses from .env file
   
-  //const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
+  // //const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
 
-  //const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
-  log.info("Initiating HRE Env");
+  // //const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
+  // log.info("Initiating HRE Env");
 
-  let url = process.env.RPCURL || "http://localhost:8546";
-  let customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+  // let url = process.env.RPCURL || "http://localhost:8546";
+  // let customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
-  log.info("getting governance")
-  let gvWallet: Wallet =  new ethers.Wallet(process.env.GOVERNANCE || "", customHttpProvider); 
-  let gvAddress = await gvWallet.getAddress();
-  const governance = await SignerWithAddress.create(customHttpProvider.getSigner(gvAddress));
+  // log.info("getting governance")
+  // let gvWallet: Wallet =  new ethers.Wallet(process.env.GOVERNANCE || "", customHttpProvider); 
+  // let gvAddress = await gvWallet.getAddress();
+  // const governance = await SignerWithAddress.create(customHttpProvider.getSigner(gvAddress));
 
-  log.info("getting treasury");
-  let tsWallet: Wallet =  new ethers.Wallet(process.env.TREASURY || "", customHttpProvider); 
-  let tsAddress = await tsWallet.getAddress();
-  const treasury =  await SignerWithAddress.create(customHttpProvider.getSigner(tsAddress));
+  // log.info("getting treasury");
+  // let tsWallet: Wallet =  new ethers.Wallet(process.env.TREASURY || "", customHttpProvider); 
+  // let tsAddress = await tsWallet.getAddress();
+  // const treasury =  await SignerWithAddress.create(customHttpProvider.getSigner(tsAddress));
 
-  log.info("getting user for contract");
-  let hcWallet: Wallet = new ethers.Wallet(process.env.USERCT || "", customHttpProvider); 
-  let hcAddress = await hcWallet.getAddress();
-  const user = await SignerWithAddress.create(customHttpProvider.getSigner(hcAddress)); 
-  //const user = accounts[3];
-  log.info("Returning governance, treasury and user");
+  // log.info("getting user for contract");
+  // let hcWallet: Wallet = new ethers.Wallet(process.env.USERCT || "", customHttpProvider); 
+  // let hcAddress = await hcWallet.getAddress();
+  // const user = await SignerWithAddress.create(customHttpProvider.getSigner(hcAddress)); 
+  // //const user = accounts[3];
+  // log.info("Returning governance, treasury and user");
+
+  // return [governance, treasury, user];
+  const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
+
+  const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
+  const governance = accounts[1];
+  const treasury = accounts[2];
+  const user = accounts[3];
 
   return [governance, treasury, user];
 }
 
 async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function ValidateSign(signedMessage: SignatureLike, publicAddress: string, signedStruct: any ): Promise<boolean> {
+
+  let isCorrect = false;
+
+  const msgHash = ethers.utils.hashMessage(JSON.stringify(signedStruct));
+  const msgHashBytes = ethers.utils.arrayify(msgHash);
+
+  const recoveredPubKey = ethers.utils.recoverPublicKey(msgHashBytes, signedMessage);
+  const recoveredAddress = ethers.utils.recoverAddress(msgHashBytes, signedMessage);
+
+  log.info(`recoveredPubKey: ${recoveredPubKey}, recoveredAddress: ${recoveredAddress} `);
+
+  if(recoveredAddress == publicAddress){
+      return true;
+  }
+
+  return isCorrect;
 }

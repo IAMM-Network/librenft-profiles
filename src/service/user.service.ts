@@ -12,18 +12,22 @@ export async function createUser(input: DocumentDefinition<UserDocument>){
         let existingUser = await User.find( { handle: input.handle});
 
         if(existingUser && existingUser.length > 0){
-            throw new Error("Existing Handler");
+            throw new Error("Existing user with requested handler");
         }
 
-        let user = await User.create(input);
+        const profileId = await createProfile(input);
 
-        if(user){
+        if(profileId > -1) {
             //create the lens profile
             console.log(input);
-            createProfile(input);
-        }
+            let user = await User.create({...input, profileId:profileId});
 
-        return user;
+            return user;
+        }
+        else{
+            throw new Error('The user can not be added because the handlers exists and belongs to other account');
+        }
+        
 
     } catch(error: any) {
         throw new Error(error);

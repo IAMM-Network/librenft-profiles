@@ -3,10 +3,19 @@ import { object, string, number, array, ref } from "yup";
 export const createPostSchema = object({
     body: object({
         publicAddress: string()
-        .required("Profile ID is required"),
+            .required("Public Address is required")
+            .min(42,"Must be exactly 42 characters")
+            .max(42, "Must be exactly 42 characters"),
         contentURI: string()
-        .required("contentURI is required"),
+            .required("contentURI is required"),
         message: string()
-        .required("message is required")
+            .required("message is required"),
+        signedMessage:  object({
+            r: string(),
+            s: string(),
+            v: number(),
+            deadline: number()
+        })
+            .required("signedMessage is required"),
     })
 });

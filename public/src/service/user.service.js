@@ -13,7 +13,7 @@ async function createUser(input) {
         logger_1.default.info(`Looking for user ${input.handle}`);
         let existingUser = await user_model_1.default.find({ handle: input.handle });
         if (existingUser && existingUser.length > 0) {
-            throw new Error("Existing Handler");
+            throw new Error("Existing user with requested handler");
         }
         let user = await user_model_1.default.create(input);
         if (user) {

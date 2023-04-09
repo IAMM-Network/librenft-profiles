@@ -9,11 +9,11 @@ const logger_1 = __importDefault(require("../logger"));
 async function createUnlockableHandler(req, res, next) {
     try {
         const unlockable = await (0, unlockable_service_1.createUnlockable)(req.body);
-        res.send(unlockable.toJSON());
+        res.status(200).json({ status: "ok", message: "Unlockable created", data: unlockable });
     }
     catch (error) {
         logger_1.default.error(error);
-        return res.status(409).send(error.message);
+        return res.status(400).send({ status: "error", message: error.message, data: error.message });
     }
 }
 exports.createUnlockableHandler = createUnlockableHandler;
@@ -29,12 +29,12 @@ async function getUnlockableHandler(req, res, next) {
             return res.send(unlockable);
         }
         else {
-            return res.json('{"status":"error","message":"Unlockable not found"}');
+            return res.json({ status: "error", message: "Unlockable not found" });
         }
     }
     catch (error) {
         logger_1.default.error(error.message);
-        return res.json(`{"status":"error","message":"Error getting the unlockable ${error.message} "}`);
+        return res.json({ status: "error", message: "Error getting the unlockable", data: error.message });
     }
 }
 exports.getUnlockableHandler = getUnlockableHandler;

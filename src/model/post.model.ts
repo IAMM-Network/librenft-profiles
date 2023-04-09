@@ -1,6 +1,8 @@
+import { BytesLike, SignatureLike } from "@ethersproject/bytes";
 import mongoose from "mongoose";
 import config from "config";
 import { number } from "yup";
+import { EIP712SignatureStruct } from "../typechain-types/LensHub";
 
 
 export interface PostDocument extends mongoose.Document {    
@@ -12,6 +14,7 @@ export interface PostDocument extends mongoose.Document {
     referenceModule?: string;
     referenceModuleInitData?: number[];
     message: string;
+    signedMessage: EIP712SignatureStruct;
 };
 
 const PostSchema = new mongoose.Schema(

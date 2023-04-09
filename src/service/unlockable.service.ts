@@ -6,8 +6,11 @@ import Unlockable, { createUnlockable, signedUnlockable, UnlockableDocument } fr
 import log from "../logger";
 import User, { UserDocument } from "../model/user.model";
 import { findUser } from './user.service';
+import { ValidateSign } from "./helpers/utils";
+import { boolean } from "yup";
 
 export async function createUnlockable(input:DocumentDefinition<createUnlockable>) {
+
     try{ 
 
         let pUnlockable: signedUnlockable = { 
@@ -19,37 +22,37 @@ export async function createUnlockable(input:DocumentDefinition<createUnlockable
 
         log.info(`tokenId: ${input.tokenId}`);
     
-        const signatureInMessage: SignatureLike = input.signedMessage;
+        const signedMessage: SignatureLike = input.signedMessage;
         
         log.info("Verifiying message");
         log.info(JSON.stringify(pUnlockable));
-        //const actualAddress = ethers.utils.verifyMessage(JSON.stringify(unlockable), signatureInMessage);
-        //log.info(actualAddress);
-        console.log(JSON.stringify(pUnlockable));
-        const msgHash = ethers.utils.hashMessage(JSON.stringify(pUnlockable));
-        const msgHashBytes = ethers.utils.arrayify(msgHash);
 
-        const recoveredPubKey = ethers.utils.recoverPublicKey(msgHashBytes, signatureInMessage);
-        const recoveredAddress = ethers.utils.recoverAddress(msgHashBytes, signatureInMessage);
+        const isValidSign = await ValidateSign(signedMessage, pUnlockable.publicAddress, pUnlockable);
 
-        log.info(`recoveredPubKey: ${recoveredPubKey}, recoveredAddress: ${recoveredAddress} `);
-    
-        if(recoveredAddress !== pUnlockable.publicAddress){
-            log.error("Adresses don't match");
-            throw new Error("Adresses don't match");
+        if(!isValidSign){
+            throw new Error("Sign is not valid");
         }
 
         //get user by Address
-        const userQuery: FilterQuery<UserDocument> = { publicAddress: recoveredAddress}
+        const userQuery: FilterQuery<UserDocument> = { publicAddress: pUnlockable.publicAddress}
         const user = await findUser(userQuery);
 
         if(!user) {
-            throw new Error("User not found");
+            throw new Error("User with that public address was not found");
         }
 
-        let newUnlockable = { uuid: randomUUID(), publicAddress: recoveredAddress, contractAddress: pUnlockable.contractAddress, tokenId: pUnlockable.tokenId, link: pUnlockable.link, user: user._id };
+        let newUnlockable = { 
+            uuid: randomUUID(), 
+            publicAddress: pUnlockable.publicAddress, 
+            contractAddress: pUnlockable.contractAddress, 
+            tokenId: pUnlockable.tokenId, 
+            link: pUnlockable.link, 
+            user: user._id 
+        };
 
-        return await Unlockable.create(newUnlockable);
+        const dbUnlockable = await Unlockable.create(newUnlockable);
+
+        return dbUnlockable;
 
     }catch(error:any){
         log.error(error.message);

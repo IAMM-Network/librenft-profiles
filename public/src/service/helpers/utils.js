@@ -3,11 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initEnv = exports.deployWithVerify = exports.deployContract = exports.waitForTx = exports.getAddrs = exports.ProtocolState = exports.ZERO_ADDRESS = void 0;
+exports.ValidateSign = exports.initEnv = exports.deployWithVerify = exports.deployContract = exports.waitForTx = exports.getAddrs = exports.ProtocolState = exports.ZERO_ADDRESS = void 0;
 require("@nomiclabs/hardhat-ethers");
-const signers_1 = require("@nomiclabs/hardhat-ethers/signers");
-const fs_1 = __importDefault(require("fs"));
 const ethers_1 = require("ethers");
+const fs_1 = __importDefault(require("fs"));
 const logger_1 = __importDefault(require("../../logger"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -73,30 +72,49 @@ exports.deployWithVerify = deployWithVerify;
 //   const user = accounts[3];
 //   return [governance, treasury, user];
 // }
-async function initEnv(input) {
-    //TODO: GARVAZ: Modify this function to get the addresses from .env file
-    //const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
-    //const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
-    logger_1.default.info("Initiating HRE Env");
-    let url = process.env.RPCURL || "http://localhost:8546";
-    let customHttpProvider = new ethers_1.ethers.providers.JsonRpcProvider(url);
-    logger_1.default.info("getting governance");
-    let gvWallet = new ethers_1.ethers.Wallet(process.env.GOVERNANCE || "", customHttpProvider);
-    let gvAddress = await gvWallet.getAddress();
-    const governance = await signers_1.SignerWithAddress.create(customHttpProvider.getSigner(gvAddress));
-    logger_1.default.info("getting treasury");
-    let tsWallet = new ethers_1.ethers.Wallet(process.env.TREASURY || "", customHttpProvider);
-    let tsAddress = await tsWallet.getAddress();
-    const treasury = await signers_1.SignerWithAddress.create(customHttpProvider.getSigner(tsAddress));
-    logger_1.default.info("getting user for contract");
-    let hcWallet = new ethers_1.ethers.Wallet(process.env.USERCT || "", customHttpProvider);
-    let hcAddress = await hcWallet.getAddress();
-    const user = await signers_1.SignerWithAddress.create(customHttpProvider.getSigner(hcAddress));
-    //const user = accounts[3];
-    logger_1.default.info("Returning governance, treasury and user");
+async function initEnv(hre) {
+    // //TODO: GARVAZ: Modify this function to get the addresses from .env file
+    // //const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
+    // //const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
+    // log.info("Initiating HRE Env");
+    // let url = process.env.RPCURL || "http://localhost:8546";
+    // let customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+    // log.info("getting governance")
+    // let gvWallet: Wallet =  new ethers.Wallet(process.env.GOVERNANCE || "", customHttpProvider); 
+    // let gvAddress = await gvWallet.getAddress();
+    // const governance = await SignerWithAddress.create(customHttpProvider.getSigner(gvAddress));
+    // log.info("getting treasury");
+    // let tsWallet: Wallet =  new ethers.Wallet(process.env.TREASURY || "", customHttpProvider); 
+    // let tsAddress = await tsWallet.getAddress();
+    // const treasury =  await SignerWithAddress.create(customHttpProvider.getSigner(tsAddress));
+    // log.info("getting user for contract");
+    // let hcWallet: Wallet = new ethers.Wallet(process.env.USERCT || "", customHttpProvider); 
+    // let hcAddress = await hcWallet.getAddress();
+    // const user = await SignerWithAddress.create(customHttpProvider.getSigner(hcAddress)); 
+    // //const user = accounts[3];
+    // log.info("Returning governance, treasury and user");
+    // return [governance, treasury, user];
+    const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
+    const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
+    const governance = accounts[1];
+    const treasury = accounts[2];
+    const user = accounts[3];
     return [governance, treasury, user];
 }
 exports.initEnv = initEnv;
 async function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
+async function ValidateSign(signedMessage, publicAddress, signedStruct) {
+    let isCorrect = false;
+    const msgHash = ethers_1.ethers.utils.hashMessage(JSON.stringify(signedStruct));
+    const msgHashBytes = ethers_1.ethers.utils.arrayify(msgHash);
+    const recoveredPubKey = ethers_1.ethers.utils.recoverPublicKey(msgHashBytes, signedMessage);
+    const recoveredAddress = ethers_1.ethers.utils.recoverAddress(msgHashBytes, signedMessage);
+    logger_1.default.info(`recoveredPubKey: ${recoveredPubKey}, recoveredAddress: ${recoveredAddress} `);
+    if (recoveredAddress == publicAddress) {
+        return true;
+    }
+    return isCorrect;
+}
+exports.ValidateSign = ValidateSign;
