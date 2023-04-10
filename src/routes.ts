@@ -1,6 +1,6 @@
 import { Express, Application, Request, Response, NextFunction} from "express";
 import { createUnlockableHandler, getUnlockableHandler } from './controllers/unlockable.controller';
-import { createUserHandler, getUserHandler, getUserSigNonces } from './controllers/user.controller';
+import { createUserHandler, getUserHandler, getUserSigNonces, createDispatcher } from './controllers/user.controller';
 import { createContractHandler, getContractHandler } from './controllers/contract.controller';
 import { createPostHandler } from './controllers/post.controller';
 import { validateRequest } from "./middleware";
@@ -18,7 +18,7 @@ function routes(app: Application){
     );
 
     app.post(
-        "/api/profiles/dispatcher", validateRequest(createDispatcherSchema), createUserHandler 
+        "/api/profiles/dispatcher", validateRequest(createDispatcherSchema), createDispatcher 
     );
 
     app.get(

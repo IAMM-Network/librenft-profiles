@@ -8,11 +8,10 @@ import { EIP712SignatureStruct } from "../typechain-types/LensHub";
 
 export interface Dispatcher {    
     publicAddress: string;
-    profileId: number;
+    profileId: BigNumber;
     dispatcher: string;
-    deadline: BigNumber;
     chainId: number;
-    nonce: number;
+    nonce: BigNumber;
     contracName: string;
     contractAddress: string;
     signedMessage: EIP712SignatureStruct;

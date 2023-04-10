@@ -12,8 +12,6 @@ export const createDispatcherSchema = object({
             .required("Dispatcher Address is required")
             .min(42,"Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
-        deadline: number()
-            .required("deadline is required"),
         chainId: number()
             .required("chainId is required"),
         nonce: number()

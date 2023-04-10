@@ -139,6 +139,8 @@ export async function setDispatcher(dispatcher: Dispatcher){
             const freeCollectModuleAddr = addrs['free collect module'];
             const lensHub = LensHub__factory.connect(addrs['lensHub proxy'], governance);
 
+            log.info(dispatcher);
+
             const _eip712Sig: EIP712SignatureStruct = dispatcher.signedMessage;
 
             const eip712st: EIP712SignatureStruct = {
@@ -156,7 +158,7 @@ export async function setDispatcher(dispatcher: Dispatcher){
             
               //Garvaz
               console.log('--## TxDispatcher ##--');
-              const txDispatcher = await waitForTx(lensHub.setDispatcherWithSig(setDispSt));
+              const txDispatcher = await waitForTx(lensHub.connect(user).setDispatcherWithSig(setDispSt));
             
               console.log(txDispatcher);   
             
@@ -183,7 +185,7 @@ export async function getSigNonce(query: FilterQuery<UserDocument>): Promise<[Bi
         const [governance, treasury, user] = await initEnv(hre);
         const addrs = getAddrs();
         //log.info(governance);
-        const lensHub = LensHub__factory.connect(addrs['lensHub proxy'], user);
+        const lensHub = LensHub__factory.connect(addrs['lensHub proxy'], governance);
 
         const sigNonce = await lensHub.sigNonces(query.publicAddress);
         console.log(`SigNonce: ${sigNonce}`);
