@@ -104,13 +104,17 @@ exports.createPost = createPost;
 async function setDispatcher(dispatcher) {
     try {
         //get user by Address
+        logger_1.default.info('--Setting Dispatcher--');
         const userQuery = { publicAddress: dispatcher.publicAddress };
         const [_isLensUser, profileID] = await isLensUser(userQuery);
         if (_isLensUser && profileID === dispatcher.profileId) {
+            logger_1.default.info('The user is Lens User and Profile ID match');
             const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
             const addrs = (0, utils_1.getAddrs)();
             const freeCollectModuleAddr = addrs['free collect module'];
             const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
+            logger_1.default.info('Whitelisting CollectModule ');
+            await (0, utils_1.waitForTx)(lensHub.whitelistCollectModule(freeCollectModuleAddr, true));
             logger_1.default.info(dispatcher);
             const _eip712Sig = dispatcher.signedMessage;
             const eip712st = {
@@ -125,9 +129,11 @@ async function setDispatcher(dispatcher) {
                 sig: eip712st,
             };
             //Garvaz
-            console.log('--## TxDispatcher ##--');
+            logger_1.default.info('--## TxDispatcher ##--');
             const txDispatcher = await (0, utils_1.waitForTx)(lensHub.connect(user).setDispatcherWithSig(setDispSt));
             console.log(txDispatcher);
+            logger_1.default.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
+            logger_1.default.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
         }
         return dispatcher;
     }

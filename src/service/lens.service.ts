@@ -143,15 +143,20 @@ export async function setDispatcher(dispatcher: Dispatcher){
     try {         
 
          //get user by Address
+         log.info('--Setting Dispatcher--');
          const userQuery: FilterQuery<UserDocument> = { publicAddress: dispatcher.publicAddress }
          const [_isLensUser, profileID] = await isLensUser(userQuery);
 
         if(_isLensUser && profileID === dispatcher.profileId){
 
+            log.info('The user is Lens User and Profile ID match');
             const [governance, treasury, user] = await initEnv(hre);
             const addrs = getAddrs();
             const freeCollectModuleAddr = addrs['free collect module'];
             const lensHub = LensHub__factory.connect(addrs['lensHub proxy'], governance);
+
+            log.info('Whitelisting CollectModule ');
+            await waitForTx(lensHub.whitelistCollectModule(freeCollectModuleAddr, true));
 
             log.info(dispatcher);
 
@@ -170,12 +175,13 @@ export async function setDispatcher(dispatcher: Dispatcher){
                 sig: eip712st,
               };
             
-              //Garvaz
-              console.log('--## TxDispatcher ##--');
-              const txDispatcher = await waitForTx(lensHub.connect(user).setDispatcherWithSig(setDispSt));
-            
-              console.log(txDispatcher);   
-            
+            //Garvaz
+            log.info('--## TxDispatcher ##--');
+            const txDispatcher = await waitForTx(lensHub.connect(user).setDispatcherWithSig(setDispSt));        
+            console.log(txDispatcher);   
+            log.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
+
+            log.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
         }
 
         return dispatcher;
