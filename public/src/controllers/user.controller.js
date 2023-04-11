@@ -57,7 +57,7 @@ async function getUserSigNonces(req, res) {
             return res.status(200).json({ status: "ok", message: "User SigNonce found", data: nonce });
         }
         else {
-            return res.status(404).json({ status: "error", message: "User signonce not found" });
+            return res.status(404).json({ status: "error", message: "User not found or SigNonce not found" });
         }
     }
     catch (error) {

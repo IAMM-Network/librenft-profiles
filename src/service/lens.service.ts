@@ -80,7 +80,7 @@ export async function createPost(dbPost: DocumentDefinition<PostDocument>){
 
          //get user by Address
          const userQuery: FilterQuery<UserDocument> = { publicAddress: dbPost.publicAddress }
-         const _isLensUser = await isLensUser(userQuery);
+         const [_isLensUser, profileID] = await isLensUser(userQuery);
 
         if(_isLensUser){
 
@@ -92,25 +92,39 @@ export async function createPost(dbPost: DocumentDefinition<PostDocument>){
 
             const newdbPost = {
                 ...dbPost,
+                profileId: profileID,
                 collectModule: freeCollectModuleAddr,
                 collectModuleInitData: defaultAbiCoder.encode(['bool'], [true]),
                 referenceModule: ZERO_ADDRESS,
                 referenceModuleInitData: []
             }
 
-            newPost = await Post.create(newdbPost);
+            log.info('Creating post in DB');
 
+            await Post.create(newdbPost);
+            
             const inputStruct: PostDataStruct = {
-                profileId: 1,
+                profileId: profileID,
                 contentURI: dbPost.contentURI,
                 collectModule: freeCollectModuleAddr,
                 collectModuleInitData: defaultAbiCoder.encode(['bool'], [true]),
                 referenceModule: ZERO_ADDRESS,
                 referenceModuleInitData: [],
             };
+
+            log.info('Creating post in godwoken');
             
             await waitForTx(lensHub.connect(user).post(inputStruct));
-            console.log(await lensHub.getPub(1, 1));
+
+            const pubCount = await lensHub.getPubCount(profileID);
+
+            log.info(`User posts: ${pubCount}`);
+
+            newPost = await lensHub.getPub(profileID, pubCount)
+
+            log.info(newPost);
+
+            return newPost;
             
         }
 
@@ -130,9 +144,9 @@ export async function setDispatcher(dispatcher: Dispatcher){
 
          //get user by Address
          const userQuery: FilterQuery<UserDocument> = { publicAddress: dispatcher.publicAddress }
-         const _isLensUser = await isLensUser(userQuery);
+         const [_isLensUser, profileID] = await isLensUser(userQuery);
 
-        if(_isLensUser){
+        if(_isLensUser && profileID === dispatcher.profileId){
 
             const [governance, treasury, user] = await initEnv(hre);
             const addrs = getAddrs();
@@ -200,7 +214,7 @@ export async function getSigNonce(query: FilterQuery<UserDocument>): Promise<[Bi
     
 }
 
-export async function isLensUser(query: FilterQuery<UserDocument>){
+export async function isLensUser(query: FilterQuery<UserDocument>): Promise<[boolean, BigNumber]>{
     try {         
 
          //get user by Address
@@ -222,11 +236,11 @@ export async function isLensUser(query: FilterQuery<UserDocument>){
             console.log(`Profile ID by handle: ${profileID}`);
 
             if(profileID){
-                return true;
+                return [true, profileID];
             }
         }
 
-        return false;
+        return [false, BigNumber.from("-1")];
 
     } catch(error: any) {
         throw new Error(error);

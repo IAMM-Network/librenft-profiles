@@ -15,13 +15,16 @@ async function createUser(input) {
         if (existingUser && existingUser.length > 0) {
             throw new Error("Existing user with requested handler");
         }
-        let user = await user_model_1.default.create(input);
-        if (user) {
+        const profileId = await (0, lens_service_1.createProfile)(input);
+        if (profileId > -1) {
             //create the lens profile
             console.log(input);
-            (0, lens_service_1.createProfile)(input);
+            let user = await user_model_1.default.create({ ...input, profileId: profileId });
+            return user;
         }
-        return user;
+        else {
+            throw new Error('The user can not be added because the handlers exists and belongs to other account');
+        }
     }
     catch (error) {
         throw new Error(error);

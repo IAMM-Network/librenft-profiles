@@ -16,8 +16,8 @@ const UserSchema = new mongoose_1.default.Schema({
     handle: { type: String, required: true, unique: true },
     imageURI: { type: String, required: false, unique: false },
     followNFTURI: { type: String, required: false, unique: false },
-    email: { type: String, required: false, unique: false },
-    profileSelected: { type: Number, required: false, unique: false },
+    profileType: { type: Number, required: false, unique: false },
+    profileId: { type: Number, required: false, unique: false },
 }, { timestamps: true });
 const User = mongoose_1.default.model("User", UserSchema);
 exports.default = User;

@@ -17,17 +17,21 @@ async function createProfile(dbUser) {
         const [governance, , user] = await (0, utils_1.initEnv)(hre);
         const addrs = (0, utils_1.getAddrs)();
         const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
-        console.log(`Profile ID by handle: ${await lensHub.getProfileIdByHandle('zer0dot')}`);
+        //console.log(`Profile ID by handle: ${await lensHub.getProfileIdByHandle('zer0dot')}`);
         console.log(`waitlisting ${user.address}`);
         await (0, utils_1.waitForTx)(lensHub.whitelistProfileCreator(user.address, true));
         //Validate if the profile Exists
         logger_1.default.info(`Getting profile id by handle ${dbUser.handle}`);
         let handle = dbUser.handle;
-        const profileID = await lensHub.getProfileIdByHandle(handle);
+        let profileID = await lensHub.getProfileIdByHandle(handle);
         console.log(`Profile ID by handle: ${profileID}`);
         if (profileID > bignumber_1.BigNumber.from('0x0')) {
-            logger_1.default.error("Existing handler");
-            return;
+            let owner = await lensHub.ownerOf(profileID);
+            console.log(`Profile owner: ${owner}`);
+            if (owner === dbUser.publicAddress)
+                return profileID;
+            else
+                return -1;
         }
         logger_1.default.info("Creating profile structure");
         const inputStruct = {
@@ -38,11 +42,11 @@ async function createProfile(dbUser) {
             followModuleInitData: [],
             followNFTURI: dbUser.followNFTURI,
         };
-        logger_1.default.info(`Lenshub creating profile for ${dbUser.publicAddress}`);
-        await (0, utils_1.waitForTx)(lensHub.createProfile(inputStruct));
-        console.log(`Total supply (should be 1): ${await lensHub.totalSupply()}`);
-        console.log(`Profile owner: ${await lensHub.ownerOf(1)}, user address (should be the same): ${user.address}`);
-        console.log(`Profile ID by handle: ${await lensHub.getProfileIdByHandle('zer0dot')}, user address (should be the same): ${user.address}`);
+        console.log('creating profile');
+        await (0, utils_1.waitForTx)(lensHub.connect(user).createProfile(inputStruct));
+        profileID = await lensHub.getProfileIdByHandle(handle);
+        console.log(`Profile ID by handle: ${profileID}, user address : ${dbUser.publicAddress}`);
+        return profileID;
     }
     catch (error) {
         logger_1.default.error(error);
@@ -55,7 +59,7 @@ async function createPost(dbPost) {
         let newPost;
         //get user by Address
         const userQuery = { publicAddress: dbPost.publicAddress };
-        const _isLensUser = await isLensUser(userQuery);
+        const [_isLensUser, profileID] = await isLensUser(userQuery);
         if (_isLensUser) {
             const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
             const addrs = (0, utils_1.getAddrs)();
@@ -63,22 +67,29 @@ async function createPost(dbPost) {
             const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
             const newdbPost = {
                 ...dbPost,
+                profileId: profileID,
                 collectModule: freeCollectModuleAddr,
                 collectModuleInitData: utils_2.defaultAbiCoder.encode(['bool'], [true]),
                 referenceModule: utils_1.ZERO_ADDRESS,
                 referenceModuleInitData: []
             };
-            newPost = await post_model_1.default.create(newdbPost);
+            logger_1.default.info('Creating post in DB');
+            await post_model_1.default.create(newdbPost);
             const inputStruct = {
-                profileId: 1,
+                profileId: profileID,
                 contentURI: dbPost.contentURI,
                 collectModule: freeCollectModuleAddr,
                 collectModuleInitData: utils_2.defaultAbiCoder.encode(['bool'], [true]),
                 referenceModule: utils_1.ZERO_ADDRESS,
                 referenceModuleInitData: [],
             };
+            logger_1.default.info('Creating post in godwoken');
             await (0, utils_1.waitForTx)(lensHub.connect(user).post(inputStruct));
-            console.log(await lensHub.getPub(1, 1));
+            const pubCount = await lensHub.getPubCount(profileID);
+            logger_1.default.info(`User posts: ${pubCount}`);
+            newPost = await lensHub.getPub(profileID, pubCount);
+            logger_1.default.info(newPost);
+            return newPost;
         }
         if (newPost) {
             console.log(newPost);
@@ -94,12 +105,13 @@ async function setDispatcher(dispatcher) {
     try {
         //get user by Address
         const userQuery = { publicAddress: dispatcher.publicAddress };
-        const _isLensUser = await isLensUser(userQuery);
-        if (_isLensUser) {
+        const [_isLensUser, profileID] = await isLensUser(userQuery);
+        if (_isLensUser && profileID === dispatcher.profileId) {
             const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
             const addrs = (0, utils_1.getAddrs)();
             const freeCollectModuleAddr = addrs['free collect module'];
             const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
+            logger_1.default.info(dispatcher);
             const _eip712Sig = dispatcher.signedMessage;
             const eip712st = {
                 v: _eip712Sig.v,
@@ -114,7 +126,7 @@ async function setDispatcher(dispatcher) {
             };
             //Garvaz
             console.log('--## TxDispatcher ##--');
-            const txDispatcher = await (0, utils_1.waitForTx)(lensHub.setDispatcherWithSig(setDispSt));
+            const txDispatcher = await (0, utils_1.waitForTx)(lensHub.connect(user).setDispatcherWithSig(setDispSt));
             console.log(txDispatcher);
         }
         return dispatcher;
@@ -134,7 +146,7 @@ async function getSigNonce(query) {
         const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
         const addrs = (0, utils_1.getAddrs)();
         //log.info(governance);
-        const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], user);
+        const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
         const sigNonce = await lensHub.sigNonces(query.publicAddress);
         console.log(`SigNonce: ${sigNonce}`);
         return [sigNonce, false];
@@ -160,10 +172,10 @@ async function isLensUser(query) {
             const profileID = await lensHub.getProfileIdByHandle(handle);
             console.log(`Profile ID by handle: ${profileID}`);
             if (profileID) {
-                return true;
+                return [true, profileID];
             }
         }
-        return false;
+        return [false, bignumber_1.BigNumber.from("-1")];
     }
     catch (error) {
         throw new Error(error);

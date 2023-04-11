@@ -14,19 +14,18 @@ export interface PostDocument extends mongoose.Document {
     referenceModule?: string;
     referenceModuleInitData?: number[];
     message: string;
-    signedMessage: EIP712SignatureStruct;
 };
 
 const PostSchema = new mongoose.Schema(
     {
-        publicAddress: { type: String, required: true, unique: true},
-        profileId: { type: Number, required: true, unique: true},
-        contentURI: { type: String, required: true, unique: true},
-        collectModule: { type: String, required: true, unique: true},
-        collectModuleInitData: { type: Array, required: true, unique: true},
-        referenceModule: { type: String, required: true, unique: true},
-        referenceModuleInitData: { type: Array, required: true, unique: true},
-        message: { type: String, required: true, unique: true},
+        publicAddress: { type: String, required: true, unique: false},
+        profileId: { type: Number, required: true, unique: false},
+        contentURI: { type: String, required: true, unique: false},
+        collectModule: { type: String, required: true, unique: false},
+        collectModuleInitData: { type: Array, required: true, unique: false},
+        referenceModule: { type: String, required: true, unique: false},
+        referenceModuleInitData: { type: Array, required: true, unique: false},
+        message: { type: String, required: true, unique: false},
     }
 );
 

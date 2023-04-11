@@ -69,6 +69,7 @@ const config = {
             },
         ],
     },
+    defaultNetwork: "gwTestnet",
     networks: {
         kovan: getCommonNetworkConfig(types_1.eEthereumNetwork.kovan, 42),
         ropsten: getCommonNetworkConfig(types_1.eEthereumNetwork.ropsten, 3),

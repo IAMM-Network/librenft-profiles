@@ -10,12 +10,5 @@ export const createPostSchema = object({
             .required("contentURI is required"),
         message: string()
             .required("message is required"),
-        signedMessage:  object({
-            r: string(),
-            s: string(),
-            v: number(),
-            deadline: number()
-        })
-            .required("signedMessage is required"),
     })
 });
