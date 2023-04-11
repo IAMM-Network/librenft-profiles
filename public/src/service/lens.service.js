@@ -107,7 +107,11 @@ async function setDispatcher(dispatcher) {
         logger_1.default.info('--Setting Dispatcher--');
         const userQuery = { publicAddress: dispatcher.publicAddress };
         const [_isLensUser, profileID] = await isLensUser(userQuery);
-        if (_isLensUser && profileID === dispatcher.profileId) {
+        logger_1.default.info(_isLensUser);
+        const _profileId = bignumber_1.BigNumber.from(dispatcher.profileId);
+        logger_1.default.info(_profileId);
+        logger_1.default.info(profileID);
+        if (_isLensUser && profileID.eq(_profileId)) {
             logger_1.default.info('The user is Lens User and Profile ID match');
             const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
             const addrs = (0, utils_1.getAddrs)();
@@ -176,7 +180,7 @@ async function isLensUser(query) {
             logger_1.default.info(`Getting profile id by handle ${dbUser.handle}`);
             let handle = dbUser.handle;
             const profileID = await lensHub.getProfileIdByHandle(handle);
-            console.log(`Profile ID by handle: ${profileID}`);
+            console.log(`Profile ID by handle found: ${profileID}`);
             if (profileID) {
                 return [true, profileID];
             }

@@ -146,8 +146,10 @@ export async function setDispatcher(dispatcher: Dispatcher){
          log.info('--Setting Dispatcher--');
          const userQuery: FilterQuery<UserDocument> = { publicAddress: dispatcher.publicAddress }
          const [_isLensUser, profileID] = await isLensUser(userQuery);
+         log.info(`Is Lens User: ${_isLensUser}`);
+         const _profileId = BigNumber.from(dispatcher.profileId);
 
-        if(_isLensUser && profileID === dispatcher.profileId){
+        if(_isLensUser && profileID.eq(_profileId)){
 
             log.info('The user is Lens User and Profile ID match');
             const [governance, treasury, user] = await initEnv(hre);
@@ -182,6 +184,9 @@ export async function setDispatcher(dispatcher: Dispatcher){
             log.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
 
             log.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
+        }
+        else {
+            throw new Error('The user handle must be registered before setting the dispatcher');
         }
 
         return dispatcher;
@@ -239,7 +244,7 @@ export async function isLensUser(query: FilterQuery<UserDocument>): Promise<[boo
             log.info(`Getting profile id by handle ${dbUser.handle}`);
             let handle: string = dbUser.handle;
             const profileID = await lensHub.getProfileIdByHandle(handle);
-            console.log(`Profile ID by handle: ${profileID}`);
+            console.log(`Profile ID by handle found: ${profileID}`);
 
             if(profileID){
                 return [true, profileID];
