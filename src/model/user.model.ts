@@ -3,8 +3,8 @@ import bcrypt from "bcrypt";
 import config from "config";
 
 enum profileType {
-    collector = 1,
-    creator,
+    creator = 1,
+    collector,
     builder,
     critic
 }
