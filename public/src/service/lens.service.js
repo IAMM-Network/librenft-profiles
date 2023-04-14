@@ -107,10 +107,8 @@ async function setDispatcher(dispatcher) {
         logger_1.default.info('--Setting Dispatcher--');
         const userQuery = { publicAddress: dispatcher.publicAddress };
         const [_isLensUser, profileID] = await isLensUser(userQuery);
-        logger_1.default.info(_isLensUser);
+        logger_1.default.info(`Is Lens User: ${_isLensUser}`);
         const _profileId = bignumber_1.BigNumber.from(dispatcher.profileId);
-        logger_1.default.info(_profileId);
-        logger_1.default.info(profileID);
         if (_isLensUser && profileID.eq(_profileId)) {
             logger_1.default.info('The user is Lens User and Profile ID match');
             const [governance, treasury, user] = await (0, utils_1.initEnv)(hre);
@@ -138,6 +136,9 @@ async function setDispatcher(dispatcher) {
             console.log(txDispatcher);
             logger_1.default.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
             logger_1.default.info(`Dispatcher set for: ${dispatcher.publicAddress}`);
+        }
+        else {
+            throw new Error('The user handle must be registered before setting the dispatcher');
         }
         return dispatcher;
     }
