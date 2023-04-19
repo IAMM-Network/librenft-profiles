@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 var profileType;
 (function (profileType) {
-    profileType[profileType["collector"] = 1] = "collector";
-    profileType[profileType["creator"] = 2] = "creator";
+    profileType[profileType["creator"] = 1] = "creator";
+    profileType[profileType["collector"] = 2] = "collector";
     profileType[profileType["builder"] = 3] = "builder";
     profileType[profileType["critic"] = 4] = "critic";
 })(profileType || (profileType = {}));

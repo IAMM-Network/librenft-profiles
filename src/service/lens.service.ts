@@ -23,15 +23,18 @@ export async function createProfile(dbUser: DocumentDefinition<UserDocument>){
         const lensHub = LensHub__factory.connect(addrs['lensHub proxy'], governance);
       
         //console.log(`Profile ID by handle: ${await lensHub.getProfileIdByHandle('zer0dot')}`);
+        log.info('\n\t-- Getting Governance --');
+        const govaddr = await lensHub.getGovernance();
+        log.info(`Governance Address: ${govaddr}`);
       
-        console.log(`waitlisting ${user.address}`);
+        log.info(`waitlisting ${user.address}`);
         await waitForTx(lensHub.whitelistProfileCreator(user.address, true));
 
         //Validate if the profile Exists
         log.info(`Getting profile id by handle ${dbUser.handle}`);
         let handle: string = dbUser.handle;
         let profileID = await lensHub.getProfileIdByHandle(handle);
-        console.log(`Profile ID by handle: ${profileID}`);
+        log.info(`Profile ID by handle: ${profileID}`);
 
         if(profileID > BigNumber.from('0x0')) {
 
@@ -46,6 +49,8 @@ export async function createProfile(dbUser: DocumentDefinition<UserDocument>){
 
         log.info("Creating profile structure");
 
+        log.info(dbUser);
+
         const inputStruct: CreateProfileDataStruct = {
             to: dbUser.publicAddress,
             handle: dbUser.handle,
@@ -55,9 +60,10 @@ export async function createProfile(dbUser: DocumentDefinition<UserDocument>){
             followNFTURI: dbUser.followNFTURI,
         };        
     
-        console.log('creating profile');
+        log.info('creating profile');
         await waitForTx(lensHub.connect(user).createProfile(inputStruct));
 
+        log.info('Profile created');
         profileID = await lensHub.getProfileIdByHandle(handle)
 
         console.log(

@@ -18,13 +18,16 @@ async function createProfile(dbUser) {
         const addrs = (0, utils_1.getAddrs)();
         const lensHub = typechain_types_1.LensHub__factory.connect(addrs['lensHub proxy'], governance);
         //console.log(`Profile ID by handle: ${await lensHub.getProfileIdByHandle('zer0dot')}`);
-        console.log(`waitlisting ${user.address}`);
+        logger_1.default.info('\n\t-- Getting Governance --');
+        const govaddr = await lensHub.getGovernance();
+        logger_1.default.info(`Governance Address: ${govaddr}`);
+        logger_1.default.info(`waitlisting ${user.address}`);
         await (0, utils_1.waitForTx)(lensHub.whitelistProfileCreator(user.address, true));
         //Validate if the profile Exists
         logger_1.default.info(`Getting profile id by handle ${dbUser.handle}`);
         let handle = dbUser.handle;
         let profileID = await lensHub.getProfileIdByHandle(handle);
-        console.log(`Profile ID by handle: ${profileID}`);
+        logger_1.default.info(`Profile ID by handle: ${profileID}`);
         if (profileID > bignumber_1.BigNumber.from('0x0')) {
             let owner = await lensHub.ownerOf(profileID);
             console.log(`Profile owner: ${owner}`);
@@ -34,6 +37,7 @@ async function createProfile(dbUser) {
                 return -1;
         }
         logger_1.default.info("Creating profile structure");
+        logger_1.default.info(dbUser);
         const inputStruct = {
             to: dbUser.publicAddress,
             handle: dbUser.handle,
@@ -42,8 +46,9 @@ async function createProfile(dbUser) {
             followModuleInitData: [],
             followNFTURI: dbUser.followNFTURI,
         };
-        console.log('creating profile');
+        logger_1.default.info('creating profile');
         await (0, utils_1.waitForTx)(lensHub.connect(user).createProfile(inputStruct));
+        logger_1.default.info('Profile created');
         profileID = await lensHub.getProfileIdByHandle(handle);
         console.log(`Profile ID by handle: ${profileID}, user address : ${dbUser.publicAddress}`);
         return profileID;

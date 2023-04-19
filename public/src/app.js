@@ -24,6 +24,7 @@ const options = {
         'Content-Type',
         'Accept',
         'X-Access-Token',
+        'Acess-Control-Allow-Origin',
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
