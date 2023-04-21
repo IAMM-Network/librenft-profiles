@@ -40,7 +40,7 @@ const getCommonNetworkConfig = (networkName: eNetwork, networkId: number) => ({
   },
   blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
   gas: DEFAULT_BLOCK_GAS_LIMIT,
-  gasPrice: 37257824143,
+  gasPrice: 57471896077,
   allowUnlimitedContractSize: true,
   chainId: 71401,
   throwOnTransactionFailures: true,

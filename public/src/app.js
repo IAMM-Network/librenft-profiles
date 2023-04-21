@@ -17,6 +17,7 @@ const app = (0, express_1.default)();
 const port = Number(process.env.PORT) || config_1.default.get("port");
 const host = process.env.HOST || config_1.default.get("host");
 //options for cors midddleware
+var whitelist = ['https://iamm.network/', 'http://localhost:3000'];
 const options = {
     allowedHeaders: [
         'Origin',
@@ -28,8 +29,9 @@ const options = {
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: ['http://localhost:3000', 'https://iamm.network/'],
+    origin: '*',
     preflightContinue: true,
+    optionsSuccessStatus: 204
 };
 //use cors middleware
 app.use((0, cors_1.default)(options));
