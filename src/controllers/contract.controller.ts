@@ -8,6 +8,7 @@ import { ContractDocument, ContractABIDocument } from "../model/contract.model";
 const crypto = require('crypto');
 
 export async function createContractHandler(req: Request, res: Response, next: NextFunction) {
+    
     try {      
 
         //Check ABI

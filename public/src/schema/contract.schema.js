@@ -16,7 +16,7 @@ exports.createContractSchema = (0, yup_1.object)({
             .required("Owner's public Address is required")
             .min(42, "Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
-        whiteList: (0, yup_1.string)(),
+        whiteList: (0, yup_1.array)().of((0, yup_1.string)()),
     }),
 });
 exports.queryContractSchema = (0, yup_1.object)({

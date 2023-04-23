@@ -1,4 +1,4 @@
-import { object, string, number } from "yup";
+import { object, string, number, array } from "yup";
 
 export const createContractSchema = object({
     body: object({
@@ -14,7 +14,7 @@ export const createContractSchema = object({
             .required("Owner's public Address is required")
             .min(42,"Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
-        whiteList: string(),
+        whiteList: array().of(string()),
     }),
 });
 
