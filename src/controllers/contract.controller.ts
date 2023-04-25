@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import { createContract, findContract } from "../service/contract.service";
+import { createContract, findContract, getContracts } from "../service/contract.service";
 import { findABI } from "../service/contractAbi.service";
 import log from "../logger";
 import { FilterQuery } from "mongoose";
@@ -43,23 +43,49 @@ export async function createContractHandler(req: Request, res: Response, next: N
 export async function getContractHandler(req: Request, res: Response, next: NextFunction) {
     
     try {
+
         const pPublicAddress = req.body.publicAddress;
         const pContractAddress = req.body.contractAddress;
-        const pSignedMessage = req.body.signedMessage;
-        log.info(`searching unlockable for: ${pPublicAddress}, contract: ${pContractAddress}`);
+        const pOwnerAddress = req.body.ownerAddress;
+        log.info(`Searching contract for: ${pPublicAddress}, contract: ${pContractAddress}`);
 
-        const unlockableQuery: FilterQuery<ContractDocument> = { publicAddress: pPublicAddress, contractAddress: pContractAddress, signedMessage: pSignedMessage};
-        const unlockable = await findContract(unlockableQuery);
+        const contractQuery: FilterQuery<ContractDocument> = { publicAddress: pPublicAddress, contractAddress: pContractAddress, ownerAddress: pOwnerAddress};
+        const contract = await findContract(contractQuery);
 
-        if(unlockable){
-            return res.send(unlockable);
+        if(contract){
+            return res.send(contract);
         } else {
-            return res.json('{"status":"error","message":"Unlockable not found"}');
+            return res.json('{"status":"error","message":"contract not found"}');
         }
 
     } catch (error:any) {
         log.error(error.message);
-        return res.json(`{"status":"error","message":"Error getting the unlockable ${error.message} "}`);
+        return res.json(`{"status":"error","message":"Error getting the contract ${error.message} "}`);
+    }
+
+
+}
+
+export async function getOwnerContractsHandler(req: Request, res: Response, next: NextFunction) {
+    
+    try {
+
+        const pOwnerAddress = req.params.ownerAddress;
+
+        log.info(`Searching contracts for: ${pOwnerAddress}`);
+
+        const contractQuery: FilterQuery<ContractDocument> = { ownerAddress: pOwnerAddress};
+        const contracts = await getContracts(contractQuery);
+
+        if(contracts){
+            return res.send(contracts);
+        } else {
+            return res.json('{"status":"error","message":"contract not found"}');
+        }
+
+    } catch (error:any) {
+        log.error(error.message);
+        return res.json(`{"status":"error","message":"Error getting the contract ${error.message} "}`);
     }
 
 

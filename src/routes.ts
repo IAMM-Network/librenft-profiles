@@ -1,7 +1,7 @@
 import { Express, Application, Request, Response, NextFunction} from "express";
 import { createUnlockableHandler, getUnlockableHandler } from './controllers/unlockable.controller';
 import { createUserHandler, getUserHandler, getUserSigNonces, createDispatcher } from './controllers/user.controller';
-import { createContractHandler, getContractHandler } from './controllers/contract.controller';
+import { createContractHandler, getContractHandler, getOwnerContractsHandler } from './controllers/contract.controller';
 import { createPostHandler } from './controllers/post.controller';
 import { validateRequest } from "./middleware";
 import { createUserSchema } from "./schema/user.schema";
@@ -38,11 +38,15 @@ function routes(app: Application){
     );
 
     app.post(
-        "/api/contracts", validateRequest(createContractSchema), createContractHandler
+        "/api/contracts", validateRequest(createContractSchema), getOwnerContractsHandler
     )
 
     app.get(
         "/api/contracts/:contractAddress", getContractHandler
+    )
+
+    app.get(
+        "/api/contracts/owner/:ownerAddress", getOwnerContractsHandler
     )
 
     app.get(

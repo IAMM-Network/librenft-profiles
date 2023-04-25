@@ -17,8 +17,9 @@ function routes(app) {
     app.get("/api/profiles/signonces/:publicAddress", user_controller_1.getUserSigNonces);
     app.post("/api/unlockables", (0, middleware_1.validateRequest)(unlockable_schema_1.createUnlockableSchema), unlockable_controller_1.createUnlockableHandler);
     app.get("/api/unlockables", (0, middleware_1.validateRequest)(unlockable_schema_1.queryUnlockableSchema), unlockable_controller_1.getUnlockableHandler);
-    app.post("/api/contracts", (0, middleware_1.validateRequest)(contract_schema_1.createContractSchema), contract_controller_1.createContractHandler);
+    app.post("/api/contracts", (0, middleware_1.validateRequest)(contract_schema_1.createContractSchema), contract_controller_1.getOwnerContractsHandler);
     app.get("/api/contracts/:contractAddress", contract_controller_1.getContractHandler);
+    app.get("/api/contracts/owner/:ownerAddress", contract_controller_1.getOwnerContractsHandler);
     app.get("/health", (req, res) => {
         res.send("API Working");
     });

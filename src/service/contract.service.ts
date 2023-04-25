@@ -22,3 +22,16 @@ export async function findContract(query: FilterQuery<ContractDocument>){
     }
     return dbContract;
 }
+
+export async function getContracts(query: FilterQuery<ContractDocument>){
+
+    const ownerQuery: FilterQuery<ContractDocument> = { ownerAddress: query.ownerAddress }
+
+    const dbContracts = await Contract.find(ownerQuery).lean();
+    if(dbContracts){
+        log.info(dbContracts);
+    } else {
+        log.info(`Search of contracts of the user ${query.toJSON} did not produce a result`)
+    }
+    return dbContracts;
+}
