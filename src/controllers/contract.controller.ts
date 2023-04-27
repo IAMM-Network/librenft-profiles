@@ -78,14 +78,14 @@ export async function getOwnerContractsHandler(req: Request, res: Response, next
         const contracts = await getContracts(contractQuery);
 
         if(contracts){
-            return res.send(contracts);
+            return res.status(200).json({status:"ok",message:"Contracts found", data:contracts});
         } else {
-            return res.json('{"status":"error","message":"contract not found"}');
+            return res.status(200).json({status:"error",message:"Contract not found"});
         }
 
     } catch (error:any) {
         log.error(error.message);
-        return res.json(`{"status":"error","message":"Error getting the contract ${error.message} "}`);
+        return res.status(200).json({status:"error",message:`${error.message}`});
     }
 
 
