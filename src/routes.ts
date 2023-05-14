@@ -38,7 +38,7 @@ function routes(app: Application){
     );
 
     app.post(
-        "/api/contracts", validateRequest(createContractSchema), getOwnerContractsHandler
+        "/api/contracts", validateRequest(createContractSchema), createContractHandler
     )
 
     app.get(

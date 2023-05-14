@@ -33,6 +33,7 @@ export interface ContractDocument extends mongoose.Document {
     ownerAddress: string;
     abi: mongoose.Schema.Types.ObjectId;
     whiteList: string[];
+    tokenImageURL: string;
 }
 
 const ContractABISchema = new mongoose.Schema<ContractABIDocument>(
@@ -54,6 +55,7 @@ const ContractSchema = new mongoose.Schema<ContractDocument>(
         ownerAddress: { type: String, required: false, unique: false},
         abi: { type: mongoose.Schema.Types.ObjectId, ref: 'ContractABI'},
         whiteList: [{ type: String, required: false, unique: false}],
+        tokenImageURL: { type: String, required: false, unique: false},
     },
     { timestamps: true}
 );

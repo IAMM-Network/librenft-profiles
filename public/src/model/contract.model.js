@@ -19,6 +19,7 @@ const ContractSchema = new mongoose_1.default.Schema({
     ownerAddress: { type: String, required: false, unique: false },
     abi: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'ContractABI' },
     whiteList: [{ type: String, required: false, unique: false }],
+    tokenImageURL: { type: String, required: false, unique: false },
 }, { timestamps: true });
 const Contract = mongoose_1.default.model("Contract", ContractSchema);
 exports.Contract = Contract;
