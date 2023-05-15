@@ -15,6 +15,9 @@ export const createContractSchema = object({
             .min(42,"Must be exactly 42 characters")
             .max(42, "Must be exactly 42 characters"),
         whiteList: array().of(string()),
+        tokenImageURL: string(),
+        cid: string(),
+        metadata: string(),
     }),
 });
 

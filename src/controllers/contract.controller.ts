@@ -23,7 +23,10 @@ export async function createContractHandler(req: Request, res: Response, next: N
                 address: req.body.address,
                 ownerAddress: req.body.ownerAddress,
                 abi: contractABI._id,
-                whiteList: req.body.whiteList
+                whiteList: req.body.whiteList,
+                tokenImageURL: req.body.tokenImageURL,
+                cid: req.body.cid,
+                metadata: req.body.metadata
             }
 
             const contract = await createContract(saveContract);
