@@ -27,7 +27,7 @@ export async function getContracts(query: FilterQuery<ContractDocument>){
 
     const ownerQuery: FilterQuery<ContractDocument> = { ownerAddress: query.ownerAddress }
 
-    const dbContracts = await Contract.find(ownerQuery).lean();
+    const dbContracts = await Contract.find(ownerQuery).sort({"createdAt": -1}).lean();
     if(dbContracts){
         log.info(dbContracts);
     } else {
